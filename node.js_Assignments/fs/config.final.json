@@ -1,0 +1,10 @@
+{
+  "db": {
+    "host": "staging.example.com",
+    "port": 3000
+  },
+  "debug": false,
+  "features": [
+    "local"
+  ]
+}
