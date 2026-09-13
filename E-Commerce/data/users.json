@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "password": "hashed_password_here",
+    "role": "admin"
+  },
+  {
+    "id": 2,
+    "username": "john_doe",
+    "password": "hashed_password_here",
+    "role": "customer"
+  }
+]
