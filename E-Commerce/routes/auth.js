@@ -34,8 +34,8 @@ router.post('/login', async(req, res) => {
     const users = readData('users.json');
     const { username, password } = req.body;
     const user = users.find(u => u.username === username);
-    if(!users || !(await bcrypt.compare(password, user.passwordHash))) {
-        res.status(401).json({ error: "invalid username or password"});
+    if(!user || !(await bcrypt.compare(password, user.passwordHash))) {
+        return res.status(401).json({ error: "invalid username or password"});
     }
    
     const token = jwt.sign(
@@ -44,7 +44,7 @@ router.post('/login', async(req, res) => {
            username: user.username,
            role: user.role 
         },
-        SECRET,
+        process.env.JWT_SECRET,
         {
             expiresIn: '1h'
         }

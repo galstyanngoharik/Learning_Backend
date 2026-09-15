@@ -5,12 +5,15 @@ const authenticate = require('../middleware/authenticate');
 
 router.post('/', authenticate, (req, res) => {
     const { items } = req.body;
-    if(!items) {
-        return res.status(400).json({ error: "Items array is required" });
+    if(!items || !Array.isArray(items) || !items.length) {
+        return res.status(400).json({ error: "Items array cannot be empty" });
     }
     const products = readData('products.json');
     let totalPrice = 0;
     for(const item of items) {
+        if (!item.quantity || typeof item.quantity !== 'number' || item.quantity <= 0 || !Number.isInteger(item.quantity)) {
+            return res.status(400).json({ error: `Invalid quantity for product ID ${item.productId}` });
+        }
         const product = products.find(p => p.id === item.productId);
         if(!product) {
             return res.status(404).json({ error: `Product with ID ${item.productId} not found` });
@@ -18,8 +21,8 @@ router.post('/', authenticate, (req, res) => {
         if(product.stock < item.quantity) {
             return res.status(404).json({ error: `Not enough stock for product: ${product.name}` });
         }
-        product.stock -= items.quantity;
-        totalPrice += product.price * items.quantity;
+        product.stock -= item.quantity;
+        totalPrice += product.price * item.quantity;
     }
     const orders = readData('orders.json');
     const newOrder = {

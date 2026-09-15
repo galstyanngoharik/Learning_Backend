@@ -5,9 +5,6 @@ const authenticate = require('../middleware/authenticate');
 const authorize = require('../middleware/authorize');
 
 
-
-module.exports = router;
-
 router.get('/', (req, res) => {
     let products = readData('products.json');
     if(req.query.category) {
@@ -32,7 +29,8 @@ router.get('/:id', (req, res) => {
 router.post('/', authenticate, authorize('admin'), (req, res) => {
     const products = readData('products.json');
     const { name, price, category, stock } = req.body;
-    if(!name || !price) {
+    if(!name || (price === undefined || price === null || price < 0) || 
+        (stock !== undefined && (!Number.isInteger(stock) || stock < 0))) {
         return res.status(400).json({ error: "name and price are required" });
     }
     const newProduct = {
@@ -74,3 +72,5 @@ router.delete('/:id', authenticate, authorize('admin'), (req, res) => {
     writeData('products.json', newProducts);
     res.status(204).send();
 });
+
+module.exports = router;
